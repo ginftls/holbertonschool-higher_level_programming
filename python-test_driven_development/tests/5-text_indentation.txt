@@ -2,6 +2,8 @@ $ cat tests/5-text_indentation.txt
 5-text_indentation.text_indentation
 ===================================
 
+>>> text_indentation = __import__('5-text_indentation').text_indentation
+
 >>> text_indentation("Hello. How are you? Fine:")
 Hello.
 
