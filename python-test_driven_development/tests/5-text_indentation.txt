@@ -1,4 +1,3 @@
-$ cat tests/5-text_indentation.txt
 5-text_indentation.text_indentation
 ===================================
 
@@ -6,25 +5,29 @@ $ cat tests/5-text_indentation.txt
 
 >>> text_indentation("Hello. How are you? Fine:")
 Hello.
-
+<BLANKLINE>
 How are you?
-
+<BLANKLINE>
 Fine:
+<BLANKLINE>
 
 >>> text_indentation("Test case with no triggers")
 Test case with no triggers
+<BLANKLINE>
 
 >>> text_indentation("Multiple. Triggers? Yes: indeed.")
 Multiple.
-
+<BLANKLINE>
 Triggers?
-
+<BLANKLINE>
 Yes:
-
+<BLANKLINE>
 indeed.
+<BLANKLINE>
 
 >>> text_indentation("")
 <BLANKLINE>
+
 >>> text_indentation(123)
 Traceback (most recent call last):
   ...
