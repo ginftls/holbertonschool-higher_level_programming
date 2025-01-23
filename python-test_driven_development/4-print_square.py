@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 def print_square(size):
     """
     Prints a square with the character #.
@@ -20,4 +21,3 @@ def print_square(size):
     # Print the square
     for _ in range(size):
         print("#" * size)
-        
