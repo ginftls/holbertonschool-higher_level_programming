@@ -15,11 +15,14 @@ def print_square(size):
         size (int): The size length of the square.
 
     Raises:
-        TypeError: If size is not an integer.
+        TypeError: If size is not an integer or a float equivalent toaninteger.
         ValueError: If size is less than 0.
     """
+    # Handle floats that are equivalent to integers
+    if isinstance(size, float) and size.is_integer():
+        size = int(size)
     # Check if size is an integer
-    if not isinstance(size, int):
+    elif not isinstance(size, int):
         raise TypeError("size must be an integer")
     # Check if size is less than 0
     if size < 0:
