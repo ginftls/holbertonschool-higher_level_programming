@@ -1,0 +1,29 @@
+$ cat tests/5-text_indentation.txt
+5-text_indentation.text_indentation
+===================================
+
+>>> text_indentation("Hello. How are you? Fine:")
+Hello.
+
+How are you?
+
+Fine:
+
+>>> text_indentation("Test case with no triggers")
+Test case with no triggers
+
+>>> text_indentation("Multiple. Triggers? Yes: indeed.")
+Multiple.
+
+Triggers?
+
+Yes:
+
+indeed.
+
+>>> text_indentation("")
+<BLANKLINE>
+>>> text_indentation(123)
+Traceback (most recent call last):
+  ...
+TypeError: text must be a string
