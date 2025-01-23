@@ -1,13 +1,13 @@
 #!/usr/bin/python3
 """
 Module 5-text_indentation
-Defines a function that prints a text with 2 new lines after certain characters.
+Defines afunction that prints a text with 2 new lines after certain characters.
 """
 
 
 def text_indentation(text):
     """
-    Prints a text with 2 new lines after each of these characters: '.', '?', and ':'.
+    Prints a text with 2 new lines after each of these characters:'.', '?',':'.
 
     Args:
         text (str): The text to be formatted and printed.
