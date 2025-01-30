@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Defines a Rectangle class with string representation."""
 
+
 class Rectangle:
     """Represent a rectangle with string representation."""
 

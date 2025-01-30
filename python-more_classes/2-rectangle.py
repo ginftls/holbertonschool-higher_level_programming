@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Defines a Rectangle class with area and perimeter methods."""
 
+
 class Rectangle:
     """Represent a rectangle with width, height, area, and perimeter."""
 
@@ -49,4 +50,3 @@ class Rectangle:
         if self.__width == 0 or self.__height == 0:
             return 0
         return 2 * (self.__width + self.__height)
-    
