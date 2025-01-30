@@ -1,4 +1,10 @@
 #!/usr/bin/python3
+
+"""
+Module defines Square class that initializes square of given size.
+"""
+
+
 class Square:
     """
     Square class. Class is used to create square of given size.
@@ -36,3 +42,4 @@ class Square:
         """
         # Calculate and return area of square.
         return self.__size * self.__size
+    
