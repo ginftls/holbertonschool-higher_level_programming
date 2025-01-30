@@ -1,8 +1,8 @@
 #!/usr/bin/python3
-"""Defines a Rectangle class with area and perimeter methods."""
+"""Defines a Rectangle class with string representation."""
 
 class Rectangle:
-    """Represent a rectangle with width, height, area, and perimeter."""
+    """Represent a rectangle with string representation."""
 
     def __init__(self, width=0, height=0):
         """Initialize a new Rectangle.
@@ -49,4 +49,16 @@ class Rectangle:
         if self.__width == 0 or self.__height == 0:
             return 0
         return 2 * (self.__width + self.__height)
-    
+
+    def __str__(self):
+        """Return the printable representation of the Rectangle.
+
+        Represents the rectangle with the # character.
+        """
+        if self.__width == 0 or self.__height == 0:
+            return ""
+
+        rect = []
+        for i in range(self.__height):
+            rect.append("#" * self.__width)
+        return "\n".join(rect)
