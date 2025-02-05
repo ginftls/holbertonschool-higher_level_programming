@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+
+
 def __init__(self, width, height):
     """Initialize a Rectangle instance with validated width and height."""
     super().__init__()
