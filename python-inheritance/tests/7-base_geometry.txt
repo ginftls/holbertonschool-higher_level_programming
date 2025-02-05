@@ -1,26 +1,94 @@
-# Test cases for BaseGeometry
+This module defines a base geometry class BaseGeometry.
 
-# integer_validator should accept positive integers
->>> bg = BaseGeometry()
->>> bg.integer_validator("my_int", 12)
->>> bg.integer_validator("width", 89)
+Usage
+=====
 
-# integer_validator should raise TypeError for non-integer values
->>> try:
-...     bg.integer_validator("name", "John")
-... except Exception as e:
-...     print(f"[{e.__class__.__name__}] {e}")
-[TypeError] name must be an integer
+Importing the class from the module:
+    >>> BaseGeometry = __import__('7-base_geometry').BaseGeometry
 
-# integer_validator should raise ValueError for zero and negative values
->>> try:
-...     bg.integer_validator("age", 0)
-... except Exception as e:
-...     print(f"[{e.__class__.__name__}] {e}")
-[ValueError] age must be greater than 0
+Now we can create a BaseGeometry instance:
+    >>> bg = BaseGeometry()
 
->>> try:
-...     bg.integer_validator("distance", -4)
-... except Exception as e:
-...     print(f"[{e.__class__.__name__}] {e}")
-[ValueError] distance must be greater than 0
+The class has two methods:
+
+1. area(self)
+-------------
+
+This method is not implemented and should raise an Exception:
+
+    >>> bg.area()
+    Traceback (most recent call last):
+    Exception: area() is not implemented
+
+2. integer_validator(self, name, value)
+---------------------------------------
+
+This method validates the input:
+
+Passing valid integers should not raise any exceptions:
+    >>> bg.integer_validator("my_int", 12)
+    >>> bg.integer_validator("width", 89)
+
+Passing non-integer types should raise a TypeError:
+    >>> bg.integer_validator("name", "John")
+    Traceback (most recent call last):
+    TypeError: name must be an integer
+
+    >>> bg.integer_validator("age", 0)
+    Traceback (most recent call last):
+    ValueError: age must be greater than 0
+
+    >>> bg.integer_validator("distance", -4)
+    Traceback (most recent call last):
+    ValueError: distance must be greater than 0
+
+Passing other data types should also raise a TypeError:
+    >>> bg.integer_validator("average", 7.8)
+    Traceback (most recent call last):
+    TypeError: average must be an integer
+
+    >>> bg.integer_validator("list", [1, 2, 3])
+    Traceback (most recent call last):
+    TypeError: list must be an integer
+
+    >>> bg.integer_validator("dict", {"key": "value"})
+    Traceback (most recent call last):
+    TypeError: dict must be an integer
+
+    >>> bg.integer_validator("tuple", (1, 2))
+    Traceback (most recent call last):
+    TypeError: tuple must be an integer
+
+    >>> bg.integer_validator("set", {1, 2, 3})
+    Traceback (most recent call last):
+    TypeError: set must be an integer
+
+    >>> bg.integer_validator("bool", True)
+    Traceback (most recent call last):
+    TypeError: bool must be an integer
+
+    >>> bg.integer_validator("none", None)
+    Traceback (most recent call last):
+    TypeError: none must be an integer
+
+Edge cases:
+    >>> bg.integer_validator("infinity", float('inf'))
+    Traceback (most recent call last):
+    TypeError: infinity must be an integer
+
+    >>> bg.integer_validator("nan", float('nan'))
+    Traceback (most recent call last):
+    TypeError: nan must be an integer
+
+    >>> bg.integer_validator("max int", 2**31 - 1)
+
+    >>> bg.integer_validator("min int", -2**31)
+    Traceback (most recent call last):
+    ValueError: min int must be greater than 0
+
+Testing __doc__:
+    >>> print(BaseGeometry.__doc__)
+    Represent base geometry.
+
+    >>> print(BaseGeometry.area.__doc__)
+    Exception
