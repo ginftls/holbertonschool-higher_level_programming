@@ -7,8 +7,8 @@ Script that adds all arguments to a Python list and saves them to a JSON file.
 
 import sys
 import os
-from save_to_json_file import save_to_json_file
-from load_from_json_file import load_from_json_file
+from json import dump as save_to_json_file
+from json import load as load_from_json_file
 
 FILENAME = "add_item.json"
 
