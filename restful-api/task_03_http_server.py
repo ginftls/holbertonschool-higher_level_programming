@@ -42,7 +42,7 @@ class SimpleAPIHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(content.encode('utf-8'))
 
     def _send_json(self,
-                   data: Dict[str, Any], 
+                   data: Dict[str, Any],
                    status_code: int = HTTPStatus.OK) -> None:
         """Helper method specifically for sending JSON responses.
 
