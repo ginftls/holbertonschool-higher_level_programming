@@ -1,123 +1,133 @@
 #!/usr/bin/python3
 """API Security and Authentication Techniques"""
-from flask import Flask, jsonify, request
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_httpauth import HTTPBasicAuth
-from flask_jwt_extended import (
-    JWTManager, create_access_token, jwt_required, get_jwt_identity
-)
-import datetime
 
-app = Flask(__name__)
+import json
+from flask import Flask, request, jsonify
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
+import datetime as dt
+from functools import wraps
 
-# Configure JWT
-app.config['JWT_SECRET_KEY'] = 'super-secret-key-change-in-production'
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(hours=1)
-jwt = JWTManager(app)
+# Generate a secure secret key (replace with a strong random string)
+SECRET_KEY = 'your-secure-secret-key'
 
-# Setup basic auth
-auth = HTTPBasicAuth()
-
-# User database
 users = {
-    "user1": {
-        "username": "user1",
-        "password": generate_password_hash("password"),
-        "role": "user"
-    },
-    "admin1": {
-        "username": "admin1",
-        "password": generate_password_hash("password"),
-        "role": "admin"
-    }
+    "user1": {"username": "user1", "role": "user"},
+    "admin1": {"username": "admin1", "role": "admin"}
 }
 
-
-# Basic auth verification function
-@auth.verify_password
-def verify_password(username, password):
-    if username in users and check_password_hash(
-        users[username]['password'], password
-    ):
-        return username
-    return None
+app = Flask(__name__)
+jwt = JWTManager(app)
 
 
-# JWT error handlers
-@jwt.unauthorized_loader
-def handle_unauthorized_error(err):
-    return jsonify({"error": "Missing or invalid token"}), 401
+# Custom decorators for JWT handling
+def jwt_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if 'access_token' not in request.headers:
+            return jsonify({"error": "Unauthorized"}), 401
+
+        try:
+            token = jwt.decode(request.headers.get('access_token'))
+            current_user = get_jwt_identity()
+
+            if not current_user or 'role' not in current_user:
+                return jsonify({"error": "Unauthorized"}), 401
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+        return f(*args, **kwargs)
+    return wrapper
 
 
-@jwt.invalid_token_loader
-def handle_invalid_token_error(err):
+def handle_unauthorized():
+    return jsonify({"error": "Unauthorized"}), 401
+
+
+def handle_invalid_token():
     return jsonify({"error": "Invalid token"}), 401
 
 
-@jwt.expired_token_loader
-def handle_expired_token_error(header, payload):
-    return jsonify({"error": "Token has expired"}), 401
+def handle_expired_token():
+    return jsonify({"error": "Token expired"}), 401
 
 
-@jwt.revoked_token_loader
-def handle_revoked_token_error(header, payload):
-    return jsonify({"error": "Token has been revoked"}), 401
+def handle_revoked_token():
+    return jsonify({"error": "Token revoked"}), 401
 
 
-@jwt.needs_fresh_token_loader
-def handle_needs_fresh_token_error(header, payload):
-    return jsonify({"error": "Fresh token required"}), 401
+def handle_needs_fresh_token():
+    return jsonify({"message": "Fresh token required"}), 401
 
 
-# Routes
-@app.route('/basic-protected')
-@auth.login_required
-def basic_protected():
-    return jsonify({"message": "Basic Auth: Access Granted"})
-
-
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
+@jwt_required
 def login():
-    data = request.get_json()
-    username = data.get('username', None)
-    password = data.get('password', None)
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
 
     if not username or not password:
-        return jsonify({"error": "Missing username or password"}), 400
+        return handle_unauthorized()
 
-    if username not in users or not check_password_hash(
-        users[username]['password'], password
-    ):
-        return jsonify({"error": "Invalid credentials"}), 401
+    user = users.get(username)
+    if not user:
+        return jsonify({"error": "User not found"}), 401
 
-    # Create token with user info in the identity
-    access_token = create_access_token(
-        identity={
-            "username": username,
-            "role": users[username]['role']
-        }
-    )
+    # Assuming perfect match for this example
+    if user['password'] == password:
+        current_time = dt.datetime.utcnow()
 
-    return jsonify({"access_token": access_token})
+        # Generate JWT with user info
+        token = jwt.dumps({
+            'access_token': generate_token(),
+            'exp': current_time + dt.timedelta(hours=1),
+            'identity': {
+                'user_id': username,
+                'role': user['role']
+            }
+        })
 
+        return {"access_token": token.decode('UTF-8')}, 200
 
-@app.route('/jwt-protected')
-@jwt_required()
-def jwt_protected():
-    return jsonify({"message": "JWT Auth: Access Granted"})
-
-
-@app.route('/admin-only')
-@jwt_required()
-def admin_only():
-    current_user = get_jwt_identity()
-
-    # Check if the user has the admin role
-    if current_user.get('role') != 'admin':
-        return jsonify({"error": "Admin access required"}), 403
-
-    return jsonify({"message": "Admin Access: Granted"})
+    else:
+        return handle_unauthorized()
+    # Return proper error response for invalid password
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+@app.route('/api/protected', methods=['GET'])
+@jwt_required
+def protected():
+    user_data = get_jwt_identity()
+
+    if not user_data or 'role' not in user_data:
+        return handle_unauthorized()
+
+    role = user_data['role']
+
+    # Example action specific to your application here
+
+    return jsonify({"status": f"Protected Resource - Role: {role}"}), 200
+
+
+@app.route('/api/token-refresh', methods=['POST'])
+@jwt_refresh_token_required
+def refresh_token():
+    if 'refresh_token' not in request.headers:
+        return handle_unauthorized()
+
+    try:
+        token = jwt.decode(
+            getattr(request, 'headers', {}).get('refresh_token')
+        )
+        new_token = jwt.dumps({
+            'access_token': generate_token(),
+            'exp': dt.utcnow() + dt.timedelta(hours=1),
+            'identity': {
+                'user_id': username,
+                'role': user['role']
+            }
+        })
+
+        return {"access_token": new_token.decode('UTF-8')}, 200
+    except Exception as e:
+        return handle_unauthorized(), 500
