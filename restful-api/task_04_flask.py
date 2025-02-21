@@ -1,6 +1,3 @@
-#!/usr/bin/python3
-"""Module for handling routes with Flask to respond to different endpoints"""
-
 from flask import Flask, jsonify, request
 
 # Initialize the Flask application
