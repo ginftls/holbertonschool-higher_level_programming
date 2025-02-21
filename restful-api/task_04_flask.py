@@ -1,9 +1,14 @@
+#!/usr/bin/python3
+"""Module for handling routes with Flask to respond to different endpoints"""
+
 from flask import Flask, jsonify, request
 
-# Initialize the Flask application
+# Initialize Flask application
 app = Flask(__name__)
 
-# Initialize the in-memory users dictionary with the example data
+# Initialize in-memory users dictionary
+# Note: Example in instructions shows users without username field,
+# but expected output shows users with username field
 users = {
     "jane": {
         "username": "jane",
@@ -22,25 +27,25 @@ users = {
 
 @app.route('/')
 def home():
-    """Root endpoint that returns a welcome message"""
+    """Handle root endpoint"""
     return "Welcome to the Flask API!"
 
 
 @app.route('/data')
 def get_data():
-    """Returns a list of all usernames stored in the API"""
+    """Return a list of all usernames"""
     return jsonify(list(users.keys()))
 
 
 @app.route('/status')
 def get_status():
-    """Returns the API status"""
+    """Return API status"""
     return "OK"
 
 
 @app.route('/users/<username>')
 def get_user(username):
-    """Returns the full object corresponding to the provided username"""
+    """Return user data for the specified username"""
     if username in users:
         return jsonify(users[username])
     else:
@@ -49,22 +54,21 @@ def get_user(username):
 
 @app.route('/add_user', methods=['POST'])
 def add_user():
-    """
-    Handles POST requests to add a new user
-    Returns 201 on success, 400 if username is missing
-    """
-    # Get JSON data from request
+    """Add a new user via POST request"""
+    # Get request data as JSON
     user_data = request.get_json()
 
     # Check if username is provided
     if 'username' not in user_data:
         return jsonify({"error": "Username is required"}), 400
 
-    # Add the user to the users dictionary
+    # Get username from the data
     username = user_data['username']
+
+    # Store the user in our dictionary
     users[username] = user_data
 
-    # Return confirmation message with 201 status code
+    # Return confirmation with 201 Created status
     return jsonify({
         "message": "User added",
         "user": user_data
