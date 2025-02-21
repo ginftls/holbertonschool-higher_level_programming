@@ -1,6 +1,3 @@
-#!/usr/bin/python3
-"""Module for fetch_and_print_posts and fetch_and_save_posts methods"""
-
 from flask import Flask, jsonify, request
 
 # Initialize Flask application
