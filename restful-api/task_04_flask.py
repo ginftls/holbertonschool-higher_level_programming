@@ -3,9 +3,10 @@
 
 from flask import Flask, jsonify, request
 
+# Initialize Flask application
 app = Flask(__name__)
 
-# In-memory database for storing users
+# In-memory database for storing users - preloaded with sample data
 users = {
     "jane": {
         "username": "jane",
@@ -24,14 +25,16 @@ users = {
 
 @app.route('/')
 def home():
-    """Root endpoint to welcome users to the API"""
+    """Root endpoint that returns a welcome message"""
     return "Welcome to the Flask API!"
 
 
 @app.route('/data')
 def get_data():
     """Returns a list of all usernames stored in the API"""
-    return jsonify(list(users.keys()))
+    # Extract just the usernames as a list
+    usernames = list(users.keys())
+    return jsonify(usernames)
 
 
 @app.route('/status')
@@ -42,7 +45,10 @@ def get_status():
 
 @app.route('/users/<username>')
 def get_user(username):
-    """Returns the full user object for the specified username"""
+    """
+    Returns the full user object for the specified username
+    or an error if the user doesn't exist
+    """
     if username in users:
         return jsonify(users[username])
     else:
@@ -51,24 +57,38 @@ def get_user(username):
 
 @app.route('/add_user', methods=['POST'])
 def add_user():
-    """Adds a new user to the in-memory database"""
-    # Get the JSON data from the request
-    user_data = request.json
+    """
+    Adds a new user to the users dictionary
+    Requires JSON with at least a username field
+    """
+    # Ensure the request contains JSON data
+    if not request.is_json:
+        return jsonify({"error": "Request must be JSON"}), 400
 
-    # Check if username is provided
+    # Get the user data from the request
+    user_data = request.get_json()
+
+    # Validate required fields
     if 'username' not in user_data:
         return jsonify({"error": "Username is required"}), 400
 
-    # Extract username
     username = user_data['username']
 
-    # Add the user to our in-memory database
-    users[username] = user_data
+    # Create the complete user object
+    new_user = {
+        "username": username,
+        "name": user_data.get("name", ""),
+        "age": user_data.get("age", 0),
+        "city": user_data.get("city", "")
+    }
 
-    # Return confirmation with the user data
+    # Store the user in our dictionary
+    users[username] = new_user
+
+    # Return success message with 201 Created status code
     return jsonify({
         "message": "User added",
-        "user": user_data
+        "user": new_user
     }), 201
 
 
