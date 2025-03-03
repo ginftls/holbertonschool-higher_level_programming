@@ -1,2 +1,1 @@
-SQL - Introduction
-
+SQL introduction
