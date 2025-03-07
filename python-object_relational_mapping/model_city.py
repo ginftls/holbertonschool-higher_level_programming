@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Defines the City class, which represents a city in the database.
+Defines the City class, which represents a city in the databases.
 """
 
 
