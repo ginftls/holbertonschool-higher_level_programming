@@ -1,0 +1,5 @@
+*.txt
+*_main.py
+/__pycache__/
+db.py
+products.db
