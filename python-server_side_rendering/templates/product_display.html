@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Product Display - My Flask App</title>
+</head>
+<body>
+    <!-- Include the reusable header -->
+    {% include 'header.html' %}
+
+    <!-- Page-specific content -->
+    <h1>Product Display</h1>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% elif products %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.category }}</td>
+                        <td>${{ "%.2f"|format(product.price) }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No products available.</p>
+    {% endif %}
+
+    <!-- Include the reusable footer -->
+    {% include 'footer.html' %}
+</body>
+</html>
